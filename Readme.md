@@ -5,4 +5,4 @@ We are building a complete video hosting website similar to youtube with all the
 
 Project uses all standard practices like JWT, bcrypt, access tokens, refresh Tokens and many more.
 
-- [Model link](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj?origin=share)
+- [Model link](https://app.eraser.io/workspace/Is02FJCzcj2q4euQ5v27?origin=share)

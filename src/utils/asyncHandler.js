@@ -10,8 +10,7 @@ const asyncHandler = (requestFunction) => {
 
 
 
-
-
+export {asyncHandler};
 
 
 //alternate way to write this function: (doesnt use express's default error handling)

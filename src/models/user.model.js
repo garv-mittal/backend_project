@@ -53,7 +53,7 @@ const userSchema = mongoose.Schema(
 )
 
 userSchema.pre("save", async function (next) {
-    if(!this.isModified(this.password)) return next();          //checking if password is updated or not
+    if(!this.isModified("password")) return next();          //checking if password is updated or not
     
     this.password= await bcrypt.hash(this.password,10);          //hashing the password for secure storage
     next();    

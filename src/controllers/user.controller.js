@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteFromCloudinary } from "../utils/deleteFromCloudinary.js";
 import { generateAccessAndRefereshTokens } from "../utils/generateTokens.js";
 import {jwt} from "jsonwebtoken";
 
@@ -64,6 +65,7 @@ const registerUser= asyncHandler( async(req,res) => {
     const user = await User.create({
         fullName,
         avatar: avatar?.url,
+        avatarPublicId:avatar?.public_id,
         coverImage: coverImage?.url || "",
         email, 
         password,
@@ -267,6 +269,10 @@ const updateAccountDetails = asyncHandler(async (req,res) => {
 
 
 const updateUserAvatar = asyncHandler(async(req, res) => {
+    
+    //to delete the old image
+    const oldAvatarPublicId = user.avatarPublicId;
+    
     const avatarLocalPath = req.file?.path
 
     if (!avatarLocalPath) {
@@ -275,7 +281,7 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
-    if (!avatar.url) {
+    if (!avatar.url || !avatar.public_id) {
         throw new ApiError(400, "Error while uploading on avatar")
         
     }
@@ -284,11 +290,17 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         req.user?._id,
         {
             $set:{
-                avatar: avatar.url
+                avatar: avatar.url,
+                avatarPublicId:avatar.public_id
             }
         },
         {new: true}
     ).select("-password")
+
+    //deleting the old image by first making sure tht old image exists
+    if(oldAvatarPublicId){
+        await deleteFromCloudinary(oldAvatarPublicId);
+    }
 
     return res
     .status(200)
@@ -299,6 +311,10 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
 
 
 const updateUserCoverImage = asyncHandler(async(req, res) => {
+
+    //to be able to delete old image
+    const oldCoverImagePublicId = user.coverImagePublicId;
+
     const coverImageLocalPath = req.file?.path
 
     if (!coverImageLocalPath) {
@@ -316,11 +332,17 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
         req.user?._id,
         {
             $set:{
-                coverImage: coverImage.url
+                coverImage: coverImage.url,
+                coverImagePublicId:coverImage.public_id
             }
         },
         {new: true}
     ).select("-password")
+
+    //deleting the old image by first making sure tht old image exists
+    if(oldAvatarPublicId){
+        await deleteFromCloudinary(oldAvatarPublicId);
+    }
 
     return res
     .status(200)

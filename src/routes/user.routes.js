@@ -30,4 +30,21 @@ router.route("/logout").post(
 
 router.route("/refresh-token").post(refreshAccessToken)
 
+//change password
+router.route("/change-password").post(verifyJWT, changeCurrentPassword)
+
+router.route("/current-user").get(verifyJWT, getCurrentUser)
+
+
+//update account details and avatar and coveaimage files
+router.route("/update-account").patch(verifyJWT, updateAccountDetails)
+
+router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
+
+router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)
+
+
+//get the subcriber, subscribedTo and isSubscribed or not values
+router.route("/c/:username").get(verifyJWT, getUserChannelProfile)
+
 export default router
